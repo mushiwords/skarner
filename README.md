@@ -42,3 +42,20 @@ func describeColumnDatas(db *sql.DB, schema string, table *TableOptions) error {
 
 	return  nil
 }
+
+//
+    columns := make([]interface{}, len(columnNames))
+	columnPointers := make([]interface{}, len(columnNames))
+	for i := range columns {
+		columnPointers[i] = &columns[i]
+	}
+
+	if scanError := rows.Scan(columnPointers...); scanError != nil {
+		return nil, scanError
+	}
+
+	record := make(map[string]interface{})
+	for i, colName := range columnNames {
+		val := columnPointers[i].(*interface{})
+		record[colName] = *val
+	}
